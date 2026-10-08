@@ -75,24 +75,13 @@ select {
 }
 
 .brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.65rem;
-  font-family: var(--font-display);
-  font-weight: 550;
-  font-size: clamp(1.15rem, 2.4vw, 1.45rem);
-  letter-spacing: -0.03em;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: -0.02em;
   color: var(--ink);
   line-height: 1;
   min-width: 0;
-}
-
-.brand__mark {
-  width: 0.55rem;
-  height: 0.55rem;
-  border-radius: 50%;
-  background: var(--burgundy-bright);
-  flex: none;
 }
 
 .brand:hover {
@@ -115,7 +104,8 @@ select {
   color: var(--ink-muted);
   border-radius: 0;
   padding: 0;
-  font-size: 0.92rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
   font-weight: 650;
   cursor: pointer;
   transition: color 0.2s var(--ease);
@@ -994,14 +984,9 @@ select {
   }
 
   .brand {
-    font-size: 1.05rem;
+    font-size: 0.88rem;
     min-width: 0;
     flex: 1;
-  }
-
-  .brand__mark {
-    width: 0.45rem;
-    height: 0.45rem;
   }
 
   .topnav {
@@ -1011,7 +996,7 @@ select {
   .navlink,
   .topnav-link,
   .linkish {
-    font-size: 0.82rem;
+    font-size: 0.88rem;
   }
 
   .btn {
