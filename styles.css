@@ -70,20 +70,20 @@ select {
 
 .topbar {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  gap: 1.25rem;
-  padding: 1.5rem 0 1.15rem;
+  gap: 1.5rem;
+  padding: 1.4rem 0 1.3rem;
   border-bottom: 1px solid var(--line);
 }
 
 .brand {
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: 0.95rem;
-  letter-spacing: -0.02em;
+  font-family: var(--font-display);
+  font-weight: 550;
+  font-size: clamp(1.2rem, 2.5vw, 1.45rem);
+  letter-spacing: -0.04em;
   color: var(--ink);
-  line-height: 1;
+  line-height: 1.1;
   min-width: 0;
 }
 
@@ -93,8 +93,8 @@ select {
 
 .topnav {
   display: flex;
-  align-items: baseline;
-  gap: 1.35rem;
+  align-items: center;
+  gap: 1.5rem;
   flex: none;
 }
 
@@ -106,13 +106,15 @@ select {
   background: none;
   color: var(--ink-muted);
   border-radius: 0;
-  padding: 0;
+  padding: 0.2rem 0;
   font-family: var(--font-body);
-  font-size: 0.95rem;
-  font-weight: 650;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   cursor: pointer;
   transition: color 0.2s var(--ease);
-  line-height: 1;
+  line-height: 1.2;
 }
 
 .navlink:hover,
@@ -126,7 +128,7 @@ select {
 }
 
 .navlink--accent:hover {
-  color: #c44a5c;
+  color: #a83242;
 }
 
 .linkish.is-active,
@@ -1026,19 +1028,20 @@ select {
   }
 
   .brand {
-    font-size: 0.88rem;
+    font-size: 1.1rem;
     min-width: 0;
     flex: 1;
   }
 
   .topnav {
-    gap: 0.95rem;
+    gap: 1rem;
   }
 
   .navlink,
   .topnav-link,
   .linkish {
-    font-size: 0.88rem;
+    font-size: 0.64rem;
+    letter-spacing: 0.1em;
   }
 
   .btn {
