@@ -131,7 +131,6 @@ function resetReel() {
 function card(movie, index) {
   const article = document.createElement('article');
   article.className = 'work';
-  article.style.animationDelay = `${0.05 + index * 0.04}s`;
   const liked = isFavorite(movie.id);
 
   article.innerHTML = `
