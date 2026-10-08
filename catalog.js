@@ -1,5 +1,6 @@
 import { loadMovies, filterMovies, MOOD_TAGS, TIME_TAGS, ratingLabel } from './data.js';
 import { getFavorites, isFavorite, toggleFavorite } from './favorites.js';
+import { createSelect } from './select.js';
 
 const state = {
   mood: 'all',
@@ -14,25 +15,15 @@ const state = {
 const catalogEl = document.getElementById('catalog');
 const countEl = document.getElementById('resultCount');
 const favCountEl = document.getElementById('favCount');
-const moodEl = document.getElementById('mood');
-const timeEl = document.getElementById('time');
-const genreEl = document.getElementById('genre');
-const countryEl = document.getElementById('country');
+const toolbar = document.getElementById('toolbar');
 const modal = document.getElementById('rouletteModal');
 const stage = document.getElementById('rouletteStage');
+const track = document.getElementById('reelTrack');
 const poolEl = document.getElementById('roulettePool');
 const goMovie = document.getElementById('goMovie');
 
-function fillSelect(el, options) {
-  el.replaceChildren(
-    ...options.map((o) => {
-      const opt = document.createElement('option');
-      opt.value = o.id ?? o;
-      opt.textContent = o.label ?? o;
-      return opt;
-    }),
-  );
-}
+let selects = {};
+let spinning = false;
 
 function syncFavCount() {
   favCountEl.textContent = String(getFavorites().length);
@@ -85,7 +76,7 @@ function card(movie, index) {
       <p class="work__desc">${movie.logline}</p>
       <div class="work__links">
         <a href="movie.html?id=${movie.id}">Открыть →</a>
-        <button type="button" class="like ${liked ? 'is-on' : ''}" data-id="${movie.id}" aria-pressed="${liked}" aria-label="В избранное">
+        <button type="button" class="like ${liked ? 'is-on' : ''}" data-id="${movie.id}" aria-pressed="${liked}">
           ${liked ? '♥ В избранном' : '♡ Хочу посмотреть'}
         </button>
       </div>
@@ -118,99 +109,158 @@ function render() {
   }
 }
 
+function buildToolbar() {
+  const genres = [...new Set(state.movies.flatMap((m) => m.genres))].sort((a, b) =>
+    a.localeCompare(b, 'ru'),
+  );
+  const countries = [...new Set(state.movies.flatMap((m) => m.countries))].sort((a, b) =>
+    a.localeCompare(b, 'ru'),
+  );
+
+  selects.mood = createSelect({
+    id: 'mood',
+    label: 'Настроение',
+    options: MOOD_TAGS,
+    value: state.mood,
+    onChange: (v) => {
+      state.mood = v;
+      render();
+      updatePoolHint();
+    },
+  });
+  selects.time = createSelect({
+    id: 'time',
+    label: 'Время',
+    options: TIME_TAGS,
+    value: state.time,
+    onChange: (v) => {
+      state.time = v;
+      render();
+      updatePoolHint();
+    },
+  });
+  selects.genre = createSelect({
+    id: 'genre',
+    label: 'Жанр',
+    options: [{ id: 'all', label: 'Все жанры' }, ...genres.map((g) => ({ id: g, label: g }))],
+    value: state.genre,
+    onChange: (v) => {
+      state.genre = v;
+      render();
+      updatePoolHint();
+    },
+  });
+  selects.country = createSelect({
+    id: 'country',
+    label: 'Страна',
+    options: [{ id: 'all', label: 'Все страны' }, ...countries.map((c) => ({ id: c, label: c }))],
+    value: state.country,
+    onChange: (v) => {
+      state.country = v;
+      render();
+      updatePoolHint();
+    },
+  });
+
+  const reset = document.createElement('button');
+  reset.type = 'button';
+  reset.className = 'btn btn--ghost';
+  reset.textContent = 'Сбросить';
+  reset.addEventListener('click', () => {
+    state.mood = 'all';
+    state.time = 'any';
+    state.genre = 'all';
+    state.country = 'all';
+    selects.mood.setValue('all');
+    selects.time.setValue('any');
+    selects.genre.setValue('all');
+    selects.country.setValue('all');
+    render();
+    updatePoolHint();
+  });
+
+  toolbar.replaceChildren(
+    selects.mood.el,
+    selects.time.el,
+    selects.genre.el,
+    selects.country.el,
+    reset,
+  );
+}
+
+function reelItem(movie, active = false) {
+  return `
+    <div class="reel__item${active ? ' is-active' : ''}" data-id="${movie.id}">
+      <img src="${movie.poster}" alt="" />
+      <div>
+        <strong>${movie.title}</strong>
+        <span>${movie.year} · ${movie.runtime} мин</span>
+      </div>
+    </div>
+  `;
+}
+
 function openModal() {
   modal.hidden = false;
   document.body.style.overflow = 'hidden';
   updatePoolHint();
-  stage.innerHTML = '<p class="roulette-stage__hint">Нажми «Крутить»</p>';
+  track.innerHTML = '<div class="reel__empty">Нажми «Крутить»</div>';
+  track.style.transform = 'translateY(0)';
   goMovie.hidden = true;
   state.lastPick = null;
 }
 
 function closeModal() {
+  if (spinning) return;
   modal.hidden = true;
   document.body.style.overflow = '';
 }
 
 function spin() {
   const pool = roulettePool();
-  if (!pool.length) {
-    stage.innerHTML = `<p class="roulette-stage__hint">${
-      state.rouletteSource === 'favorites'
-        ? 'Сначала добавь фильмы в избранное'
-        : 'По фильтрам пусто'
-    }</p>`;
-    goMovie.hidden = true;
+  if (!pool.length || spinning) {
+    if (!pool.length) {
+      track.innerHTML = `<div class="reel__empty">${
+        state.rouletteSource === 'favorites'
+          ? 'Сначала добавь фильмы в избранное'
+          : 'По фильтрам пусто'
+      }</div>`;
+      goMovie.hidden = true;
+    }
     return;
   }
 
-  const frames = 14;
-  let i = 0;
-  stage.classList.add('is-spinning');
-  const tick = () => {
-    const temp = pool[i % pool.length];
-    stage.innerHTML = `
-      <img src="${temp.poster}" alt="" />
-      <div>
-        <p class="roulette-stage__label">Выпадает…</p>
-        <p class="roulette-stage__title">${temp.title}</p>
-      </div>
-    `;
-    i += 1;
-    if (i < frames) {
-      setTimeout(tick, 70 + i * 18);
-    } else {
-      const pick = pool[Math.floor(Math.random() * pool.length)];
-      state.lastPick = pick;
-      stage.classList.remove('is-spinning');
-      stage.innerHTML = `
-        <img src="${pick.poster}" alt="" />
-        <div>
-          <p class="roulette-stage__label">Сегодня вечером</p>
-          <p class="roulette-stage__title">${pick.title}</p>
-          <p class="roulette-stage__meta">${pick.year} · ${pick.runtime} мин · ${pick.genres.slice(0, 2).join(', ')}</p>
-        </div>
-      `;
-      goMovie.hidden = false;
-      goMovie.href = `movie.html?id=${pick.id}`;
-    }
-  };
-  tick();
+  spinning = true;
+  goMovie.hidden = true;
+  const pick = pool[Math.floor(Math.random() * pool.length)];
+  state.lastPick = pick;
+
+  const sequence = [];
+  for (let i = 0; i < 18; i += 1) sequence.push(pool[i % pool.length]);
+  sequence.push(pick);
+
+  track.innerHTML = sequence.map((m, i) => reelItem(m, i === sequence.length - 1)).join('');
+  track.style.transition = 'none';
+  track.style.transform = 'translateY(0)';
+
+  const itemHeight = 72 + 12;
+  const target = sequence.length - 1;
+  const offset = target * itemHeight;
+
+  requestAnimationFrame(() => {
+    track.style.transition = 'transform 2.4s cubic-bezier(0.12, 0.75, 0.12, 1)';
+    track.style.transform = `translateY(-${offset}px)`;
+  });
+
+  window.setTimeout(() => {
+    spinning = false;
+    track.querySelectorAll('.reel__item').forEach((el) => {
+      el.classList.toggle('is-active', el.dataset.id === String(pick.id));
+    });
+    goMovie.hidden = false;
+    goMovie.href = `movie.html?id=${pick.id}`;
+  }, 2500);
 }
-
-document.getElementById('resetFilters').addEventListener('click', () => {
-  state.mood = 'all';
-  state.time = 'any';
-  state.genre = 'all';
-  state.country = 'all';
-  moodEl.value = 'all';
-  timeEl.value = 'any';
-  genreEl.value = 'all';
-  countryEl.value = 'all';
-  render();
-  updatePoolHint();
-});
-
-moodEl.addEventListener('change', () => {
-  state.mood = moodEl.value;
-  render();
-  updatePoolHint();
-});
-timeEl.addEventListener('change', () => {
-  state.time = timeEl.value;
-  render();
-  updatePoolHint();
-});
-genreEl.addEventListener('change', () => {
-  state.genre = genreEl.value;
-  render();
-  updatePoolHint();
-});
-countryEl.addEventListener('change', () => {
-  state.country = countryEl.value;
-  render();
-  updatePoolHint();
-});
 
 document.getElementById('openRoulette').addEventListener('click', openModal);
 document.getElementById('closeRoulette').addEventListener('click', closeModal);
@@ -221,14 +271,14 @@ document.getElementById('openFavs').addEventListener('click', () => {
     alert('Пока пусто — нажми «Хочу посмотреть» на карточках.');
     return;
   }
-  state.genre = 'all';
-  state.country = 'all';
   state.mood = 'all';
   state.time = 'any';
-  moodEl.value = 'all';
-  timeEl.value = 'any';
-  genreEl.value = 'all';
-  countryEl.value = 'all';
+  state.genre = 'all';
+  state.country = 'all';
+  selects.mood?.setValue('all');
+  selects.time?.setValue('any');
+  selects.genre?.setValue('all');
+  selects.country?.setValue('all');
   const onlyFav = state.movies.filter((m) => favs.has(m.id));
   countEl.textContent = `Избранное: ${onlyFav.length}`;
   catalogEl.replaceChildren(...onlyFav.map((m, i) => card(m, i)));
@@ -249,19 +299,7 @@ document.querySelectorAll('.segment__btn').forEach((btn) => {
 
 try {
   state.movies = await loadMovies();
-  fillSelect(moodEl, MOOD_TAGS);
-  fillSelect(timeEl, TIME_TAGS);
-  const genres = [...new Set(state.movies.flatMap((m) => m.genres))].sort((a, b) =>
-    a.localeCompare(b, 'ru'),
-  );
-  const countries = [...new Set(state.movies.flatMap((m) => m.countries))].sort((a, b) =>
-    a.localeCompare(b, 'ru'),
-  );
-  fillSelect(genreEl, [{ id: 'all', label: 'Все жанры' }, ...genres.map((g) => ({ id: g, label: g }))]);
-  fillSelect(countryEl, [
-    { id: 'all', label: 'Все страны' },
-    ...countries.map((c) => ({ id: c, label: c })),
-  ]);
+  buildToolbar();
   syncFavCount();
   render();
 } catch (e) {

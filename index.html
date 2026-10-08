@@ -7,11 +7,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,450;9..144,550;9..144,650&family=Syne:wght@500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <base href="/tonight-movies/" />
-    <link rel="stylesheet" href="styles.css?v=3" />
+    <link rel="stylesheet" href="styles.css?v=4" />
   </head>
   <body>
     <div class="page">
@@ -22,40 +22,20 @@
             <button type="button" class="linkish" id="openFavs">
               Избранное <span id="favCount">0</span>
             </button>
-            <button type="button" class="btn btn--primary" id="openRoulette">
-              Рулетка
-            </button>
+            <button type="button" class="btn btn--primary" id="openRoulette">Рулетка</button>
           </nav>
         </header>
 
         <section class="hero">
-          <p class="hero__role">Выбор фильма без мучений</p>
+          <p class="hero__role">Вечер без бесконечного выбора</p>
           <h1 class="hero__name">Что смотрим сегодня?</h1>
           <p class="hero__text">
-            Сохраняй то, что откликается. Если выбирать лень — крути рулетку
-            по избранному или по фильтрам.
+            Лайкай то, что хочется. Если выбирать лень — крути рулетку по
+            избранному или по фильтрам.
           </p>
         </section>
 
-        <section class="toolbar" aria-label="Фильтры">
-          <div class="field">
-            <label for="mood">Настроение</label>
-            <select id="mood"></select>
-          </div>
-          <div class="field">
-            <label for="time">Время</label>
-            <select id="time"></select>
-          </div>
-          <div class="field">
-            <label for="genre">Жанр</label>
-            <select id="genre"></select>
-          </div>
-          <div class="field">
-            <label for="country">Страна</label>
-            <select id="country"></select>
-          </div>
-          <button type="button" class="btn btn--ghost" id="resetFilters">Сбросить</button>
-        </section>
+        <section class="toolbar" aria-label="Фильтры" id="toolbar"></section>
 
         <p class="count" id="resultCount"></p>
         <section class="works" id="catalog" aria-live="polite"></section>
@@ -65,15 +45,19 @@
     <div class="modal" id="rouletteModal" hidden>
       <div class="modal__card">
         <button type="button" class="modal__close" id="closeRoulette" aria-label="Закрыть">×</button>
-        <h2 class="modal__title">Рулетка на вечер</h2>
-        <p class="modal__note">Случайный фильм — из того, что уже отфильтровано, или только из лайков.</p>
+        <h2 class="modal__title">Рулетка</h2>
+        <p class="modal__note">Случайный фильм на вечер — из лайков или из того, что сейчас в фильтрах.</p>
         <div class="segment" role="group" aria-label="Источник рулетки">
           <button type="button" class="segment__btn is-active" data-source="filters">По фильтрам</button>
           <button type="button" class="segment__btn" data-source="favorites">Из избранного</button>
         </div>
         <p class="modal__pool" id="roulettePool"></p>
-        <div class="roulette-stage" id="rouletteStage">
-          <p class="roulette-stage__hint">Нажми «Крутить»</p>
+        <div class="reel" id="rouletteStage">
+          <div class="reel__fade" aria-hidden="true"></div>
+          <div class="reel__pointer" aria-hidden="true"></div>
+          <div class="reel__track" id="reelTrack">
+            <div class="reel__empty">Нажми «Крутить»</div>
+          </div>
         </div>
         <div class="modal__actions">
           <button type="button" class="btn btn--primary" id="spinBtn">Крутить</button>
@@ -82,6 +66,6 @@
       </div>
     </div>
 
-    <script type="module" src="catalog.js?v=3"></script>
+    <script type="module" src="catalog.js?v=4"></script>
   </body>
 </html>
