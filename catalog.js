@@ -22,9 +22,24 @@ const modal = document.getElementById('rouletteModal');
 const track = document.getElementById('reelTrack');
 const poolEl = document.getElementById('roulettePool');
 const goMovie = document.getElementById('goMovie');
+const heroStack = document.getElementById('heroStack');
 
 let selects = {};
 let spinning = false;
+
+function paintHeroStack(movies) {
+  if (!heroStack || !movies.length) return;
+  const picks = shuffle(movies).slice(0, 3);
+  heroStack.innerHTML = picks
+    .map(
+      (m) => `
+      <div class="hero__poster">
+        <img src="${m.poster}" alt="" loading="eager" />
+      </div>
+    `,
+    )
+    .join('');
+}
 
 function syncFavCount() {
   favCountEl.textContent = String(getFavorites().length);
@@ -342,6 +357,7 @@ document.querySelectorAll('.segment__btn').forEach((btn) => {
 
 try {
   state.movies = await loadMovies();
+  paintHeroStack(state.movies);
   buildToolbar();
   syncFavCount();
   render();

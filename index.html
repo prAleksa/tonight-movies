@@ -11,7 +11,7 @@
       rel="stylesheet"
     />
     <base href="/tonight-movies/" />
-    <link rel="stylesheet" href="styles.css?v=6" />
+    <link rel="stylesheet" href="styles.css?v=7" />
   </head>
   <body>
     <div class="page">
@@ -27,15 +27,21 @@
         </header>
 
         <section class="hero">
-          <p class="hero__eyebrow">Вечер без бесконечного выбора</p>
-          <h1 class="hero__title">
-            <span class="hero__line">Что смотрим</span>
-            <span class="hero__line hero__line--accent">сегодня?</span>
-          </h1>
-          <p class="hero__text">
-            Лайкай то, что хочется. Если выбирать лень — крути рулетку по
-            избранному или по фильтрам.
-          </p>
+          <div class="hero__copy">
+            <p class="hero__eyebrow">Вечер без бесконечного выбора</p>
+            <h1 class="hero__title">
+              <span class="hero__line hero__line--sm">Что</span>
+              <span class="hero__line hero__line--accent">смотрим</span>
+              <span class="hero__line">сегодня?</span>
+            </h1>
+          </div>
+          <aside class="hero__aside">
+            <div class="hero__stack" id="heroStack" aria-hidden="true"></div>
+            <p class="hero__text">
+              Лайкай то, что хочется. Если выбирать лень — крути рулетку по
+              избранному или по фильтрам.
+            </p>
+          </aside>
         </section>
 
         <section class="toolbar" aria-label="Фильтры" id="toolbar"></section>
@@ -69,6 +75,6 @@
       </div>
     </div>
 
-    <script type="module" src="catalog.js?v=6"></script>
+    <script type="module" src="catalog.js?v=7"></script>
   </body>
 </html>
