@@ -2,6 +2,8 @@ import { loadMovies, filterMovies, MOOD_TAGS, TIME_TAGS, ratingLabel } from './d
 import { getFavorites, isFavorite, toggleFavorite } from './favorites.js';
 import { createSelect } from './select.js';
 
+const ITEM_H = 84; // 72px row + 12px gap
+
 const state = {
   mood: 'all',
   time: 'any',
@@ -10,8 +12,6 @@ const state = {
   movies: [],
   rouletteSource: 'filters',
   lastPick: null,
-  wheelPool: [],
-  wheelRotation: 0,
 };
 
 const catalogEl = document.getElementById('catalog');
@@ -19,19 +19,12 @@ const countEl = document.getElementById('resultCount');
 const favCountEl = document.getElementById('favCount');
 const toolbar = document.getElementById('toolbar');
 const modal = document.getElementById('rouletteModal');
-const disc = document.getElementById('wheelDisc');
+const track = document.getElementById('reelTrack');
 const poolEl = document.getElementById('roulettePool');
 const goMovie = document.getElementById('goMovie');
-const wheelPoster = document.getElementById('wheelPoster');
-const wheelTitle = document.getElementById('wheelTitle');
-const wheelHint = document.getElementById('wheelHint');
 
 let selects = {};
 let spinning = false;
-
-const SLICE_A = '#141414';
-const SLICE_B = '#0a0a0a';
-const SLICE_ACCENT = '#8b2a3a';
 
 function syncFavCount() {
   favCountEl.textContent = String(getFavorites().length);
@@ -53,75 +46,66 @@ function updatePoolHint() {
   const pool = roulettePool();
   if (state.rouletteSource === 'favorites') {
     poolEl.textContent = pool.length
-      ? `В избранном ${pool.length} — на колесе только они`
+      ? `В избранном ${pool.length} — крутим только их`
       : 'В избранном пусто — лайкни фильмы в каталоге';
   } else {
     poolEl.textContent = pool.length
-      ? `На колесе ${pool.length} фильм(ов) по фильтрам`
+      ? `В барабане ${pool.length} фильм(ов) по фильтрам`
       : 'По фильтрам ничего нет — смягчи условия';
   }
-  paintWheel(pool);
 }
 
-function shortTitle(title) {
-  return title.length > 18 ? `${title.slice(0, 17)}…` : title;
+function shuffle(list) {
+  const arr = [...list];
+  for (let i = arr.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
 }
 
-function paintWheel(pool) {
-  state.wheelPool = pool;
-  disc.innerHTML = '';
-  disc.style.transition = 'none';
-  disc.style.transform = `rotate(${state.wheelRotation}deg)`;
-
-  if (!pool.length) {
-    disc.style.background = '#111';
-    wheelHint.hidden = false;
-    wheelHint.textContent = 'Нечего крутить';
-    wheelTitle.hidden = true;
-    wheelPoster.hidden = true;
-    return;
+/** Build cycles of the unique pool so neighbours never repeat when pool > 1. */
+function buildReelSequence(pool, pick, cycles = 4) {
+  const seq = [];
+  for (let c = 0; c < cycles; c += 1) {
+    const round = shuffle(pool);
+    if (seq.length && pool.length > 1 && round[0].id === seq.at(-1).id) {
+      const swapAt = round.findIndex((m, idx) => idx > 0 && m.id !== seq.at(-1).id);
+      if (swapAt > 0) [round[0], round[swapAt]] = [round[swapAt], round[0]];
+    }
+    seq.push(...round);
   }
 
-  const n = pool.length;
-  const step = 360 / n;
-  const stops = pool
-    .map((_, i) => {
-      const color = n === 1 ? SLICE_ACCENT : i % 2 === 0 ? SLICE_A : SLICE_B;
-      const edge =
-        n > 1 ? `${SLICE_ACCENT} ${i * step}deg ${i * step + 0.55}deg, ` : '';
-      return `${edge}${color} ${i * step}deg ${(i + 1) * step}deg`;
-    })
-    .join(', ');
-
-  // 0deg = top; slices go clockwise
-  disc.style.background = `conic-gradient(from 0deg, ${stops})`;
-
-  pool.forEach((movie, i) => {
-    const label = document.createElement('span');
-    label.className = 'wheel__slice-label';
-    label.textContent = shortTitle(movie.title);
-    // CSS rotate 0 = right, so top is -90deg
-    const mid = -90 + i * step + step / 2;
-    label.style.transform = `rotate(${mid}deg)`;
-    disc.append(label);
-  });
-
-  if (!state.lastPick) {
-    wheelHint.hidden = false;
-    wheelHint.textContent = 'Нажми «Крутить»';
-    wheelTitle.hidden = true;
-    wheelPoster.hidden = true;
+  // Land on an occurrence of pick in the last cycle
+  const start = seq.length - pool.length;
+  let target = seq.findIndex((m, i) => i >= start && m.id === pick.id);
+  if (target < 0) {
+    if (seq.at(-1)?.id === pick.id && pool.length > 1) {
+      const other = pool.find((m) => m.id !== pick.id);
+      if (other) seq.push(other);
+    }
+    seq.push(pick);
+    target = seq.length - 1;
   }
+  return { seq, target };
 }
 
-function showPick(movie) {
-  wheelHint.hidden = true;
-  wheelTitle.hidden = false;
-  wheelTitle.textContent = movie.title;
-  wheelPoster.hidden = false;
-  wheelPoster.src = movie.poster;
-  goMovie.hidden = false;
-  goMovie.href = `movie.html?id=${movie.id}`;
+function reelItem(movie, active = false) {
+  return `
+    <div class="reel__item${active ? ' is-active' : ''}" data-id="${movie.id}">
+      <img src="${movie.poster}" alt="" />
+      <div>
+        <strong>${movie.title}</strong>
+        <span>${movie.year} · ${movie.runtime} мин</span>
+      </div>
+    </div>
+  `;
+}
+
+function resetReel() {
+  track.innerHTML = '<div class="reel__empty">Нажми «Крутить»</div>';
+  track.style.transition = 'none';
+  track.style.transform = 'translateY(0)';
 }
 
 function card(movie, index) {
@@ -263,7 +247,7 @@ function openModal() {
   document.body.style.overflow = 'hidden';
   state.lastPick = null;
   goMovie.hidden = true;
-  state.wheelRotation = 0;
+  resetReel();
   updatePoolHint();
 }
 
@@ -275,40 +259,46 @@ function closeModal() {
 
 function spin() {
   const pool = roulettePool();
-  if (!pool.length || spinning) return;
+  if (spinning) return;
+
+  if (!pool.length) {
+    track.innerHTML = `<div class="reel__empty">${
+      state.rouletteSource === 'favorites'
+        ? 'Сначала добавь фильмы в избранное'
+        : 'По фильтрам пусто'
+    }</div>`;
+    goMovie.hidden = true;
+    return;
+  }
 
   spinning = true;
   goMovie.hidden = true;
-  wheelHint.hidden = false;
-  wheelHint.textContent = '…';
-  wheelTitle.hidden = true;
-  wheelPoster.hidden = true;
 
-  const pickIndex = Math.floor(Math.random() * pool.length);
-  const pick = pool[pickIndex];
+  const pick = pool[Math.floor(Math.random() * pool.length)];
   state.lastPick = pick;
+  const { seq, target } = buildReelSequence(pool, pick, 4);
 
-  const n = pool.length;
-  const step = 360 / n;
-  // Bring center of slice pickIndex to the top pointer.
-  const targetMod = -((pickIndex * step + step / 2) % 360);
-  const currentMod = ((state.wheelRotation % 360) + 360) % 360;
-  const wantMod = ((targetMod % 360) + 360) % 360;
-  let delta = wantMod - currentMod;
-  if (delta <= 0) delta += 360;
-  const turns = 5 + Math.floor(Math.random() * 2);
-  const finalRotation = state.wheelRotation + turns * 360 + delta;
+  track.innerHTML = seq.map((m, i) => reelItem(m, i === target)).join('');
+  track.style.transition = 'none';
+  track.style.transform = 'translateY(0)';
+
+  const offset = target * ITEM_H;
 
   requestAnimationFrame(() => {
-    disc.style.transition = 'transform 4s cubic-bezier(0.12, 0.75, 0.08, 1)';
-    disc.style.transform = `rotate(${finalRotation}deg)`;
-    state.wheelRotation = finalRotation;
+    requestAnimationFrame(() => {
+      track.style.transition = 'transform 2.8s cubic-bezier(0.12, 0.75, 0.12, 1)';
+      track.style.transform = `translateY(-${offset}px)`;
+    });
   });
 
   window.setTimeout(() => {
     spinning = false;
-    showPick(pick);
-  }, 4100);
+    track.querySelectorAll('.reel__item').forEach((el) => {
+      el.classList.toggle('is-active', el.dataset.id === String(pick.id));
+    });
+    goMovie.hidden = false;
+    goMovie.href = `movie.html?id=${pick.id}`;
+  }, 2900);
 }
 
 document.getElementById('openRoulette').addEventListener('click', openModal);
@@ -345,7 +335,7 @@ document.querySelectorAll('.segment__btn').forEach((btn) => {
     state.rouletteSource = btn.dataset.source;
     state.lastPick = null;
     goMovie.hidden = true;
-    state.wheelRotation = 0;
+    resetReel();
     updatePoolHint();
   });
 });

@@ -11,7 +11,7 @@
       rel="stylesheet"
     />
     <base href="/tonight-movies/" />
-    <link rel="stylesheet" href="styles.css?v=5" />
+    <link rel="stylesheet" href="styles.css?v=6" />
   </head>
   <body>
     <div class="page">
@@ -27,14 +27,11 @@
         </header>
 
         <section class="hero">
-          <div class="hero__copy">
-            <p class="hero__eyebrow">Вечер без бесконечного выбора</p>
-            <h1 class="hero__title">
-              <span class="hero__line">Что</span>
-              <span class="hero__line hero__line--accent">смотрим</span>
-              <span class="hero__line">сегодня?</span>
-            </h1>
-          </div>
+          <p class="hero__eyebrow">Вечер без бесконечного выбора</p>
+          <h1 class="hero__title">
+            <span class="hero__line">Что смотрим</span>
+            <span class="hero__line hero__line--accent">сегодня?</span>
+          </h1>
           <p class="hero__text">
             Лайкай то, что хочется. Если выбирать лень — крути рулетку по
             избранному или по фильтрам.
@@ -52,19 +49,17 @@
       <div class="modal__card">
         <button type="button" class="modal__close" id="closeRoulette" aria-label="Закрыть">×</button>
         <h2 class="modal__title">Рулетка</h2>
-        <p class="modal__note">Колесо из фильмов в пуле — крутится и останавливается на одном из них.</p>
+        <p class="modal__note">Фильмы из пула крутятся как барабан и останавливаются на одном из них.</p>
         <div class="segment" role="group" aria-label="Источник рулетки">
           <button type="button" class="segment__btn is-active" data-source="filters">По фильтрам</button>
           <button type="button" class="segment__btn" data-source="favorites">Из избранного</button>
         </div>
         <p class="modal__pool" id="roulettePool"></p>
-        <div class="wheel" id="rouletteStage">
-          <div class="wheel__pointer" aria-hidden="true"></div>
-          <div class="wheel__disc" id="wheelDisc"></div>
-          <div class="wheel__hub">
-            <img id="wheelPoster" alt="" hidden />
-            <p class="wheel__hint" id="wheelHint">Нажми «Крутить»</p>
-            <strong id="wheelTitle" hidden></strong>
+        <div class="reel" id="rouletteStage">
+          <div class="reel__fade" aria-hidden="true"></div>
+          <div class="reel__pointer" aria-hidden="true"></div>
+          <div class="reel__track" id="reelTrack">
+            <div class="reel__empty">Нажми «Крутить»</div>
           </div>
         </div>
         <div class="modal__actions">
@@ -74,6 +69,6 @@
       </div>
     </div>
 
-    <script type="module" src="catalog.js?v=5"></script>
+    <script type="module" src="catalog.js?v=6"></script>
   </body>
 </html>
