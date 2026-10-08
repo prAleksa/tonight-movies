@@ -94,12 +94,8 @@ select {
 .topnav {
   display: flex;
   align-items: center;
-  gap: 0;
+  gap: 1.35rem;
   flex: none;
-  padding: 0.35rem;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: #0a0a0a;
 }
 
 .navlink,
@@ -108,16 +104,16 @@ select {
   appearance: none;
   border: 0;
   background: none;
-  color: var(--ink-soft);
-  border-radius: 999px;
-  padding: 0.55rem 0.95rem;
+  color: var(--ink-muted);
+  border-radius: 0;
+  padding: 0;
   font-family: var(--font-body);
-  font-size: 0.78rem;
+  font-size: 0.88rem;
   font-weight: 650;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.01em;
   text-transform: none;
   cursor: pointer;
-  transition: 0.2s var(--ease);
+  transition: color 0.2s var(--ease);
   line-height: 1.2;
 }
 
@@ -125,24 +121,21 @@ select {
 .topnav-link:hover,
 .linkish:hover {
   color: var(--ink);
-  background: rgba(255, 255, 255, 0.04);
 }
 
 .navlink--accent {
-  color: #fff;
-  background: var(--burgundy);
+  color: var(--ink-muted);
 }
 
 .navlink--accent:hover {
-  color: #fff;
-  background: var(--burgundy-bright);
+  color: var(--ink);
 }
 
 .linkish.is-active,
 .navlink.is-active {
-  color: #fff;
-  background: rgba(92, 21, 32, 0.55);
+  color: var(--ink);
   box-shadow: none;
+  background: none;
   border: 0;
 }
 
@@ -1034,14 +1027,13 @@ select {
   }
 
   .topnav {
-    padding: 0.25rem;
+    gap: 1rem;
   }
 
   .navlink,
   .topnav-link,
   .linkish {
-    font-size: 0.72rem;
-    padding: 0.45rem 0.7rem;
+    font-size: 0.82rem;
   }
 
   .btn {
