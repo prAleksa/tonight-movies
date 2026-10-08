@@ -569,6 +569,16 @@ select {
   width: min(340px, 100%);
   border-radius: 4px;
   border: 1px solid var(--line);
+  box-shadow: 0 0 0 1px rgba(92, 21, 32, 0.25);
+}
+
+.detail__eyebrow {
+  margin: 0 0 0.85rem;
+  color: var(--burgundy-bright);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .detail__title {
@@ -581,8 +591,15 @@ select {
 }
 
 .detail__original {
-  margin: 0.5rem 0 1.25rem;
+  margin: 0.5rem 0 0.65rem;
   color: var(--ink-muted);
+}
+
+.detail__genres {
+  margin: 0 0 1.25rem;
+  color: var(--burgundy-bright);
+  font-size: 0.95rem;
+  font-weight: 650;
 }
 
 .scores {
@@ -612,6 +629,7 @@ select {
   font-family: var(--font-display);
   font-size: 1.5rem;
   font-weight: 550;
+  color: var(--burgundy-bright);
 }
 
 .detail__lead {
@@ -631,11 +649,26 @@ select {
   font-family: var(--font-display);
   font-size: 1.2rem;
   font-weight: 550;
+  color: var(--burgundy-bright);
 }
 
 .block p {
   margin: 0;
   color: var(--ink-soft);
+}
+
+.topnav-link {
+  border-color: rgba(122, 31, 44, 0.45);
+}
+
+.topnav-link:hover {
+  border-color: var(--burgundy-bright);
+  color: #fff;
+}
+
+.empty a {
+  color: var(--burgundy-bright);
+  font-weight: 700;
 }
 
 .block--split {

@@ -22,9 +22,10 @@ try {
           <img class="detail__poster" src="${movie.poster}" alt="" />
         </div>
         <div class="detail__content">
-          <p class="hero__role">${movie.year} · ${movie.runtime} мин · ${movie.countries.slice(0, 2).join(', ')}</p>
+          <p class="detail__eyebrow">${movie.year} · ${movie.runtime} мин · ${movie.countries.slice(0, 2).join(', ')}</p>
           <h1 class="detail__title">${movie.title}</h1>
-          <p class="detail__original">${movie.original}</p>
+          <p class="detail__original">${movie.original || ''}</p>
+          <p class="detail__genres">${movie.genres.slice(0, 4).join(' · ')}</p>
           <div class="scores">
             <div><span>Кинопоиск</span><strong>${ratingLabel(movie.kp)}</strong></div>
             <div><span>IMDb</span><strong>${ratingLabel(movie.imdb)}</strong></div>
