@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Сегодня вечером</title>
+    <title>Избранное — Сегодня вечером</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -19,30 +19,22 @@
         <header class="topbar">
           <a class="brand" href="index.html">Сегодня вечером</a>
           <nav class="topnav">
-            <a class="navlink" href="favorites.html">Избранное <span id="favCount">0</span></a>
+            <a class="navlink" href="index.html">Каталог</a>
             <button type="button" class="navlink navlink--accent" id="openRoulette">Рулетка</button>
           </nav>
         </header>
 
-        <section class="hero">
+        <section class="hero hero--simple">
           <div class="hero__copy">
-            <p class="hero__eyebrow">Вечер без бесконечного выбора</p>
+            <p class="hero__eyebrow">Твой список</p>
             <h1 class="hero__title">
-              <span class="hero__line">Что</span>
-              <span class="hero__line hero__line--accent">смотрим</span>
-              <span class="hero__line">сегодня?</span>
+              <span class="hero__line hero__line--accent">Избранное</span>
             </h1>
-          </div>
-          <aside class="hero__aside">
-            <div class="hero__stack" id="heroStack" aria-hidden="true"></div>
-            <p class="hero__text">
-              Лайкай то, что хочется. Если выбирать лень — крути рулетку по
-              избранному или по фильтрам.
+            <p class="hero__text hero__text--left">
+              Фильмы, которые отметила. Можно крутить рулетку только по ним.
             </p>
-          </aside>
+          </div>
         </section>
-
-        <section class="toolbar" aria-label="Фильтры" id="toolbar"></section>
 
         <p class="count" id="resultCount"></p>
         <section class="works" id="catalog" aria-live="polite"></section>
@@ -53,11 +45,7 @@
       <div class="modal__card">
         <button type="button" class="modal__close" id="closeRoulette" aria-label="Закрыть">×</button>
         <h2 class="modal__title">Рулетка</h2>
-        <p class="modal__note">Фильмы из пула крутятся как барабан и останавливаются на одном из них.</p>
-        <div class="segment" role="group" aria-label="Источник рулетки">
-          <button type="button" class="segment__btn is-active" data-source="filters">По фильтрам</button>
-          <button type="button" class="segment__btn" data-source="favorites">Из избранного</button>
-        </div>
+        <p class="modal__note">Крутим только фильмы из избранного.</p>
         <p class="modal__pool" id="roulettePool"></p>
         <div class="reel is-idle" id="rouletteStage">
           <div class="reel__clip">
@@ -75,6 +63,6 @@
       </div>
     </div>
 
-    <script type="module" src="catalog.js?v=19"></script>
+    <script type="module" src="favorites-page.js?v=19"></script>
   </body>
 </html>

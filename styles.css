@@ -261,40 +261,6 @@ select {
 }
 
 
-.viewbar {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin: 0 0 1rem;
-  padding: 0.85rem 0;
-  border-bottom: 1px solid var(--line);
-}
-
-.viewbar[hidden] {
-  display: none;
-}
-
-.viewbar__back {
-  appearance: none;
-  border: 0;
-  background: none;
-  color: var(--burgundy-bright);
-  font-weight: 700;
-  font-size: 0.95rem;
-  cursor: pointer;
-  padding: 0;
-}
-
-.viewbar__back:hover {
-  color: #fff;
-}
-
-.viewbar__label {
-  color: var(--ink-muted);
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
 .hero__actions {
   display: flex;
   flex-wrap: wrap;
@@ -585,6 +551,33 @@ select {
 .empty {
   color: var(--ink-muted);
   padding: 2rem 0;
+}
+
+.empty--page {
+  display: grid;
+  gap: 0.85rem;
+  justify-items: start;
+  padding: 2.5rem 0 4rem;
+  max-width: 28rem;
+}
+
+.empty--page p {
+  margin: 0;
+}
+
+.empty--page .btn {
+  margin-top: 0.5rem;
+}
+
+.hero--simple {
+  grid-template-columns: 1fr;
+  max-width: 36rem;
+}
+
+.hero__text--left {
+  text-align: left;
+  max-width: 28rem;
+  margin-top: 0.25rem;
 }
 
 .detail {
