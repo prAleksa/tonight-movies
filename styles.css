@@ -82,13 +82,13 @@ select {
   font-weight: 550;
   font-size: clamp(1.2rem, 2.5vw, 1.45rem);
   letter-spacing: -0.04em;
-  color: var(--burgundy-bright);
+  color: var(--ink);
   line-height: 1.1;
   min-width: 0;
 }
 
 .brand:hover {
-  color: #a83242;
+  color: #fff;
 }
 
 .topnav {
