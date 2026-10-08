@@ -1,0 +1,10 @@
+{
+  "name": "tonight-movies",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Прототип: выбрать фильм на вечер",
+  "scripts": {
+    "start": "npx --yes serve -l 4173",
+    "deploy": "npx --yes vercel --yes --prod"
+  }
+}

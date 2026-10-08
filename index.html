@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Сегодня вечером — что посмотреть</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600;7..72,700&family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="ambient" aria-hidden="true"></div>
+    <header class="top">
+      <a class="brand" href="./index.html">Сегодня вечером</a>
+      <p class="tagline">Выберите фильм под настроение — без бесконечного скролла</p>
+    </header>
+
+    <main class="page">
+      <section class="hero">
+        <h1>Что посмотрим сегодня?</h1>
+        <p class="lead">
+          Короткий каталог на вечер: настроение, время и жанр — затем одна страница
+          с решением «смотреть» или взять другой.
+        </p>
+      </section>
+
+      <section class="filters" aria-label="Фильтры">
+        <div class="filter-group">
+          <span class="filter-label">Настроение</span>
+          <div class="chips" id="moodChips"></div>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Сколько времени есть</span>
+          <div class="chips" id="timeChips"></div>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Жанр</span>
+          <div class="chips" id="genreChips"></div>
+        </div>
+        <button type="button" class="reset" id="resetFilters">Сбросить</button>
+      </section>
+
+      <p class="count" id="resultCount"></p>
+      <section class="grid" id="catalog" aria-live="polite"></section>
+    </main>
+
+    <footer class="foot">
+      <span>Прототип для тестового · данные из movies-data</span>
+    </footer>
+    <script type="module" src="./catalog.js"></script>
+  </body>
+</html>
