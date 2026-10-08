@@ -73,7 +73,7 @@ select {
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
-  padding: 1.4rem 0 1.3rem;
+  padding: 1.35rem 0 1.25rem;
   border-bottom: 1px solid var(--line);
 }
 
@@ -82,20 +82,24 @@ select {
   font-weight: 550;
   font-size: clamp(1.2rem, 2.5vw, 1.45rem);
   letter-spacing: -0.04em;
-  color: var(--ink);
+  color: var(--burgundy-bright);
   line-height: 1.1;
   min-width: 0;
 }
 
 .brand:hover {
-  color: #fff;
+  color: #a83242;
 }
 
 .topnav {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 0;
   flex: none;
+  padding: 0.35rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #0a0a0a;
 }
 
 .navlink,
@@ -104,16 +108,16 @@ select {
   appearance: none;
   border: 0;
   background: none;
-  color: var(--ink-muted);
-  border-radius: 0;
-  padding: 0.2rem 0;
+  color: var(--ink-soft);
+  border-radius: 999px;
+  padding: 0.55rem 0.95rem;
   font-family: var(--font-body);
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-size: 0.78rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  text-transform: none;
   cursor: pointer;
-  transition: color 0.2s var(--ease);
+  transition: 0.2s var(--ease);
   line-height: 1.2;
 }
 
@@ -121,21 +125,24 @@ select {
 .topnav-link:hover,
 .linkish:hover {
   color: var(--ink);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .navlink--accent {
-  color: var(--burgundy-bright);
+  color: #fff;
+  background: var(--burgundy);
 }
 
 .navlink--accent:hover {
-  color: #a83242;
+  color: #fff;
+  background: var(--burgundy-bright);
 }
 
 .linkish.is-active,
 .navlink.is-active {
-  color: var(--ink);
-  box-shadow: inset 0 -1px 0 var(--burgundy-bright);
-  background: none;
+  color: #fff;
+  background: rgba(92, 21, 32, 0.55);
+  box-shadow: none;
   border: 0;
 }
 
@@ -1028,20 +1035,20 @@ select {
   }
 
   .brand {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     min-width: 0;
     flex: 1;
   }
 
   .topnav {
-    gap: 1rem;
+    padding: 0.25rem;
   }
 
   .navlink,
   .topnav-link,
   .linkish {
-    font-size: 0.64rem;
-    letter-spacing: 0.1em;
+    font-size: 0.72rem;
+    padding: 0.45rem 0.7rem;
   }
 
   .btn {
