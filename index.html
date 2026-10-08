@@ -11,7 +11,7 @@
       rel="stylesheet"
     />
     <base href="/tonight-movies/" />
-    <link rel="stylesheet" href="styles.css?v=7" />
+    <link rel="stylesheet" href="styles.css?v=8" />
   </head>
   <body>
     <div class="page">
@@ -19,7 +19,7 @@
         <header class="topbar">
           <a class="brand" href="index.html">Сегодня вечером</a>
           <nav class="topnav">
-            <button type="button" class="linkish" id="openFavs">
+            <button type="button" class="linkish" id="openFavs" aria-pressed="false">
               Избранное <span id="favCount">0</span>
             </button>
             <button type="button" class="btn btn--primary" id="openRoulette">Рулетка</button>
@@ -36,15 +36,20 @@
             </h1>
           </div>
           <aside class="hero__aside">
-            <div class="hero__stack" id="heroStack" aria-hidden="true"></div>
             <p class="hero__text">
               Лайкай то, что хочется. Если выбирать лень — крути рулетку по
               избранному или по фильтрам.
             </p>
+            <div class="hero__stack" id="heroStack" aria-hidden="true"></div>
           </aside>
         </section>
 
         <section class="toolbar" aria-label="Фильтры" id="toolbar"></section>
+
+        <div class="viewbar" id="viewBar" hidden>
+          <button type="button" class="viewbar__back" id="backToCatalog">← К каталогу</button>
+          <span class="viewbar__label">Избранное</span>
+        </div>
 
         <p class="count" id="resultCount"></p>
         <section class="works" id="catalog" aria-live="polite"></section>
@@ -75,6 +80,6 @@
       </div>
     </div>
 
-    <script type="module" src="catalog.js?v=7"></script>
+    <script type="module" src="catalog.js?v=8"></script>
   </body>
 </html>

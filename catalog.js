@@ -12,11 +12,14 @@ const state = {
   movies: [],
   rouletteSource: 'filters',
   lastPick: null,
+  view: 'catalog', // 'catalog' | 'favorites'
 };
 
 const catalogEl = document.getElementById('catalog');
 const countEl = document.getElementById('resultCount');
 const favCountEl = document.getElementById('favCount');
+const favBtn = document.getElementById('openFavs');
+const viewBar = document.getElementById('viewBar');
 const toolbar = document.getElementById('toolbar');
 const modal = document.getElementById('rouletteModal');
 const track = document.getElementById('reelTrack');
@@ -163,7 +166,43 @@ function card(movie, index) {
   return article;
 }
 
+function syncViewChrome() {
+  const inFavs = state.view === 'favorites';  viewBar.hidden = !inFavs;
+  favBtn.classList.toggle('is-active', inFavs);
+  favBtn.setAttribute('aria-pressed', String(inFavs));
+  toolbar.hidden = inFavs;
+}
+
+function showCatalog() {
+  state.view = 'catalog';
+  syncViewChrome();
+  render();
+}
+
+function showFavorites() {
+  const favs = new Set(getFavorites());
+  if (!favs.size) {
+    alert('Пока пусто — нажми «Хочу посмотреть» на карточках.');
+    return;
+  }
+  state.view = 'favorites';
+  syncViewChrome();
+  render();
+}
+
 function render() {
+  if (state.view === 'favorites') {
+    const favs = new Set(getFavorites());
+    const list = state.movies.filter((m) => favs.has(m.id));
+    if (!list.length) {
+      showCatalog();
+      return;
+    }
+    countEl.textContent = `${list.length} в избранном`;
+    catalogEl.replaceChildren(...list.map((m, i) => card(m, i)));
+    return;
+  }
+
   const list = filtered();
   countEl.textContent =
     list.length === state.movies.length
@@ -319,24 +358,11 @@ function spin() {
 document.getElementById('openRoulette').addEventListener('click', openModal);
 document.getElementById('closeRoulette').addEventListener('click', closeModal);
 document.getElementById('spinBtn').addEventListener('click', spin);
-document.getElementById('openFavs').addEventListener('click', () => {
-  const favs = new Set(getFavorites());
-  if (!favs.size) {
-    alert('Пока пусто — нажми «Хочу посмотреть» на карточках.');
-    return;
-  }
-  state.mood = 'all';
-  state.time = 'any';
-  state.genre = 'all';
-  state.country = 'all';
-  selects.mood?.setValue('all');
-  selects.time?.setValue('any');
-  selects.genre?.setValue('all');
-  selects.country?.setValue('all');
-  const onlyFav = state.movies.filter((m) => favs.has(m.id));
-  countEl.textContent = `Избранное: ${onlyFav.length}`;
-  catalogEl.replaceChildren(...onlyFav.map((m, i) => card(m, i)));
+favBtn.addEventListener('click', () => {
+  if (state.view === 'favorites') showCatalog();
+  else showFavorites();
 });
+document.getElementById('backToCatalog').addEventListener('click', showCatalog);
 
 modal.addEventListener('click', (e) => {
   if (e.target === modal) closeModal();
