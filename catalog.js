@@ -22,6 +22,7 @@ const favBtn = document.getElementById('openFavs');
 const viewBar = document.getElementById('viewBar');
 const toolbar = document.getElementById('toolbar');
 const modal = document.getElementById('rouletteModal');
+const stage = document.getElementById('rouletteStage');
 const track = document.getElementById('reelTrack');
 const poolEl = document.getElementById('roulettePool');
 const goMovie = document.getElementById('goMovie');
@@ -121,6 +122,7 @@ function reelItem(movie, active = false) {
 }
 
 function resetReel() {
+  stage.classList.add('is-idle');
   track.innerHTML = '<div class="reel__empty">Нажми «Крутить»</div>';
   track.style.transition = 'none';
   track.style.transform = 'translateY(0)';
@@ -316,6 +318,7 @@ function spin() {
   if (spinning) return;
 
   if (!pool.length) {
+    stage.classList.add('is-idle');
     track.innerHTML = `<div class="reel__empty">${
       state.rouletteSource === 'favorites'
         ? 'Сначала добавь фильмы в избранное'
@@ -327,6 +330,7 @@ function spin() {
 
   spinning = true;
   goMovie.hidden = true;
+  stage.classList.remove('is-idle');
 
   const pick = pool[Math.floor(Math.random() * pool.length)];
   state.lastPick = pick;
