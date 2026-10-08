@@ -34,6 +34,7 @@ body {
   background: var(--bg);
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
 }
 
 a {
@@ -115,6 +116,14 @@ select {
   cursor: pointer;
   transition: color 0.2s var(--ease);
   line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+#favCount {
+  display: inline-block;
+  min-width: 1.25em;
+  text-align: left;
+  font-variant-numeric: tabular-nums;
 }
 
 .navlink:hover,
