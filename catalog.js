@@ -10,6 +10,8 @@ const state = {
   movies: [],
   rouletteSource: 'filters',
   lastPick: null,
+  wheelPool: [],
+  wheelRotation: 0,
 };
 
 const catalogEl = document.getElementById('catalog');
@@ -17,13 +19,19 @@ const countEl = document.getElementById('resultCount');
 const favCountEl = document.getElementById('favCount');
 const toolbar = document.getElementById('toolbar');
 const modal = document.getElementById('rouletteModal');
-const stage = document.getElementById('rouletteStage');
-const track = document.getElementById('reelTrack');
+const disc = document.getElementById('wheelDisc');
 const poolEl = document.getElementById('roulettePool');
 const goMovie = document.getElementById('goMovie');
+const wheelPoster = document.getElementById('wheelPoster');
+const wheelTitle = document.getElementById('wheelTitle');
+const wheelHint = document.getElementById('wheelHint');
 
 let selects = {};
 let spinning = false;
+
+const SLICE_A = '#141414';
+const SLICE_B = '#0a0a0a';
+const SLICE_ACCENT = '#8b2a3a';
 
 function syncFavCount() {
   favCountEl.textContent = String(getFavorites().length);
@@ -45,13 +53,75 @@ function updatePoolHint() {
   const pool = roulettePool();
   if (state.rouletteSource === 'favorites') {
     poolEl.textContent = pool.length
-      ? `В избранном ${pool.length} — крутим только их`
+      ? `В избранном ${pool.length} — на колесе только они`
       : 'В избранном пусто — лайкни фильмы в каталоге';
   } else {
     poolEl.textContent = pool.length
-      ? `По текущим фильтрам ${pool.length} фильм(ов)`
+      ? `На колесе ${pool.length} фильм(ов) по фильтрам`
       : 'По фильтрам ничего нет — смягчи условия';
   }
+  paintWheel(pool);
+}
+
+function shortTitle(title) {
+  return title.length > 18 ? `${title.slice(0, 17)}…` : title;
+}
+
+function paintWheel(pool) {
+  state.wheelPool = pool;
+  disc.innerHTML = '';
+  disc.style.transition = 'none';
+  disc.style.transform = `rotate(${state.wheelRotation}deg)`;
+
+  if (!pool.length) {
+    disc.style.background = '#111';
+    wheelHint.hidden = false;
+    wheelHint.textContent = 'Нечего крутить';
+    wheelTitle.hidden = true;
+    wheelPoster.hidden = true;
+    return;
+  }
+
+  const n = pool.length;
+  const step = 360 / n;
+  const stops = pool
+    .map((_, i) => {
+      const color = n === 1 ? SLICE_ACCENT : i % 2 === 0 ? SLICE_A : SLICE_B;
+      const edge =
+        n > 1 ? `${SLICE_ACCENT} ${i * step}deg ${i * step + 0.55}deg, ` : '';
+      return `${edge}${color} ${i * step}deg ${(i + 1) * step}deg`;
+    })
+    .join(', ');
+
+  // 0deg = top; slices go clockwise
+  disc.style.background = `conic-gradient(from 0deg, ${stops})`;
+
+  pool.forEach((movie, i) => {
+    const label = document.createElement('span');
+    label.className = 'wheel__slice-label';
+    label.textContent = shortTitle(movie.title);
+    // CSS rotate 0 = right, so top is -90deg
+    const mid = -90 + i * step + step / 2;
+    label.style.transform = `rotate(${mid}deg)`;
+    disc.append(label);
+  });
+
+  if (!state.lastPick) {
+    wheelHint.hidden = false;
+    wheelHint.textContent = 'Нажми «Крутить»';
+    wheelTitle.hidden = true;
+    wheelPoster.hidden = true;
+  }
+}
+
+function showPick(movie) {
+  wheelHint.hidden = true;
+  wheelTitle.hidden = false;
+  wheelTitle.textContent = movie.title;
+  wheelPoster.hidden = false;
+  wheelPoster.src = movie.poster;
+  goMovie.hidden = false;
+  goMovie.href = `movie.html?id=${movie.id}`;
 }
 
 function card(movie, index) {
@@ -88,7 +158,7 @@ function card(movie, index) {
     toggleFavorite(movie.id);
     syncFavCount();
     render();
-    updatePoolHint();
+    if (!modal.hidden) updatePoolHint();
   });
 
   return article;
@@ -125,7 +195,7 @@ function buildToolbar() {
     onChange: (v) => {
       state.mood = v;
       render();
-      updatePoolHint();
+      if (!modal.hidden) updatePoolHint();
     },
   });
   selects.time = createSelect({
@@ -136,7 +206,7 @@ function buildToolbar() {
     onChange: (v) => {
       state.time = v;
       render();
-      updatePoolHint();
+      if (!modal.hidden) updatePoolHint();
     },
   });
   selects.genre = createSelect({
@@ -147,7 +217,7 @@ function buildToolbar() {
     onChange: (v) => {
       state.genre = v;
       render();
-      updatePoolHint();
+      if (!modal.hidden) updatePoolHint();
     },
   });
   selects.country = createSelect({
@@ -158,7 +228,7 @@ function buildToolbar() {
     onChange: (v) => {
       state.country = v;
       render();
-      updatePoolHint();
+      if (!modal.hidden) updatePoolHint();
     },
   });
 
@@ -176,7 +246,7 @@ function buildToolbar() {
     selects.genre.setValue('all');
     selects.country.setValue('all');
     render();
-    updatePoolHint();
+    if (!modal.hidden) updatePoolHint();
   });
 
   toolbar.replaceChildren(
@@ -188,26 +258,13 @@ function buildToolbar() {
   );
 }
 
-function reelItem(movie, active = false) {
-  return `
-    <div class="reel__item${active ? ' is-active' : ''}" data-id="${movie.id}">
-      <img src="${movie.poster}" alt="" />
-      <div>
-        <strong>${movie.title}</strong>
-        <span>${movie.year} · ${movie.runtime} мин</span>
-      </div>
-    </div>
-  `;
-}
-
 function openModal() {
   modal.hidden = false;
   document.body.style.overflow = 'hidden';
-  updatePoolHint();
-  track.innerHTML = '<div class="reel__empty">Нажми «Крутить»</div>';
-  track.style.transform = 'translateY(0)';
-  goMovie.hidden = true;
   state.lastPick = null;
+  goMovie.hidden = true;
+  state.wheelRotation = 0;
+  updatePoolHint();
 }
 
 function closeModal() {
@@ -218,48 +275,40 @@ function closeModal() {
 
 function spin() {
   const pool = roulettePool();
-  if (!pool.length || spinning) {
-    if (!pool.length) {
-      track.innerHTML = `<div class="reel__empty">${
-        state.rouletteSource === 'favorites'
-          ? 'Сначала добавь фильмы в избранное'
-          : 'По фильтрам пусто'
-      }</div>`;
-      goMovie.hidden = true;
-    }
-    return;
-  }
+  if (!pool.length || spinning) return;
 
   spinning = true;
   goMovie.hidden = true;
-  const pick = pool[Math.floor(Math.random() * pool.length)];
+  wheelHint.hidden = false;
+  wheelHint.textContent = '…';
+  wheelTitle.hidden = true;
+  wheelPoster.hidden = true;
+
+  const pickIndex = Math.floor(Math.random() * pool.length);
+  const pick = pool[pickIndex];
   state.lastPick = pick;
 
-  const sequence = [];
-  for (let i = 0; i < 18; i += 1) sequence.push(pool[i % pool.length]);
-  sequence.push(pick);
-
-  track.innerHTML = sequence.map((m, i) => reelItem(m, i === sequence.length - 1)).join('');
-  track.style.transition = 'none';
-  track.style.transform = 'translateY(0)';
-
-  const itemHeight = 72 + 12;
-  const target = sequence.length - 1;
-  const offset = target * itemHeight;
+  const n = pool.length;
+  const step = 360 / n;
+  // Bring center of slice pickIndex to the top pointer.
+  const targetMod = -((pickIndex * step + step / 2) % 360);
+  const currentMod = ((state.wheelRotation % 360) + 360) % 360;
+  const wantMod = ((targetMod % 360) + 360) % 360;
+  let delta = wantMod - currentMod;
+  if (delta <= 0) delta += 360;
+  const turns = 5 + Math.floor(Math.random() * 2);
+  const finalRotation = state.wheelRotation + turns * 360 + delta;
 
   requestAnimationFrame(() => {
-    track.style.transition = 'transform 2.4s cubic-bezier(0.12, 0.75, 0.12, 1)';
-    track.style.transform = `translateY(-${offset}px)`;
+    disc.style.transition = 'transform 4s cubic-bezier(0.12, 0.75, 0.08, 1)';
+    disc.style.transform = `rotate(${finalRotation}deg)`;
+    state.wheelRotation = finalRotation;
   });
 
   window.setTimeout(() => {
     spinning = false;
-    track.querySelectorAll('.reel__item').forEach((el) => {
-      el.classList.toggle('is-active', el.dataset.id === String(pick.id));
-    });
-    goMovie.hidden = false;
-    goMovie.href = `movie.html?id=${pick.id}`;
-  }, 2500);
+    showPick(pick);
+  }, 4100);
 }
 
 document.getElementById('openRoulette').addEventListener('click', openModal);
@@ -290,9 +339,13 @@ modal.addEventListener('click', (e) => {
 
 document.querySelectorAll('.segment__btn').forEach((btn) => {
   btn.addEventListener('click', () => {
+    if (spinning) return;
     document.querySelectorAll('.segment__btn').forEach((b) => b.classList.remove('is-active'));
     btn.classList.add('is-active');
     state.rouletteSource = btn.dataset.source;
+    state.lastPick = null;
+    goMovie.hidden = true;
+    state.wheelRotation = 0;
     updatePoolHint();
   });
 });
