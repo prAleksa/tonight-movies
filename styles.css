@@ -114,13 +114,17 @@ img {
 
 .topnav-link,
 .linkish {
-  border: 0;
-  background: none;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid var(--line);
+  background: var(--surface);
   color: var(--ink-soft);
   font: inherit;
   font-size: 0.92rem;
+  font-weight: 600;
   cursor: pointer;
-  padding: 0;
+  padding: 0.55rem 0.95rem;
+  border-radius: 999px;
 }
 
 .linkish:hover,
@@ -218,12 +222,15 @@ img {
 .field select {
   width: 100%;
   appearance: none;
+  -webkit-appearance: none;
   border: 1px solid var(--line);
-  background: var(--bg-elev);
+  background: var(--bg-elev) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23d4a27f' d='M1 1l5 5 5-5'/%3E%3C/svg%3E")
+    right 0.85rem center / 12px no-repeat;
   color: var(--ink);
   border-radius: 12px;
-  padding: 0.65rem 0.8rem;
+  padding: 0.65rem 2rem 0.65rem 0.8rem;
   font: inherit;
+  color-scheme: dark;
 }
 
 .count {

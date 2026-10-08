@@ -13,7 +13,7 @@ const TIME_TAGS = [
 ];
 
 export async function loadMovies() {
-  const res = await fetch('./movies.json');
+  const res = await fetch('movies.json');
   if (!res.ok) throw new Error('Не удалось загрузить movies.json');
   const data = await res.json();
   return data.movies.map(normalizeMovie);
@@ -46,7 +46,7 @@ function normalizeMovie(raw) {
     imdb: raw.ratings?.imdb?.value ?? null,
     trailer: raw.links?.official_trailer || null,
     kpUrl: raw.identification.kinopoisk_url,
-    poster: raw.poster?.path ? `./${raw.poster.path}` : `./posters/${id}.jpg`,
+    poster: raw.poster?.path ? `${raw.poster.path}` : `posters/${id}.jpg`,
   };
 }
 

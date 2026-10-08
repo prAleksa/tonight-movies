@@ -70,7 +70,7 @@ function card(movie, index) {
   const liked = isFavorite(movie.id);
 
   article.innerHTML = `
-    <a class="work__preview" href="./movie.html?id=${movie.id}" aria-label="${movie.title}">
+    <a class="work__preview" href="movie.html?id=${movie.id}" aria-label="${movie.title}">
       <img src="${movie.poster}" alt="" loading="lazy" />
     </a>
     <div class="work__body">
@@ -79,12 +79,12 @@ function card(movie, index) {
         <span class="badge">КП ${ratingLabel(movie.kp)}</span>
       </div>
       <h3 class="work__title">
-        <a href="./movie.html?id=${movie.id}">${movie.title}</a>
+        <a href="movie.html?id=${movie.id}">${movie.title}</a>
       </h3>
       <p class="work__subtitle">${movie.genres.slice(0, 3).join(' · ')}</p>
       <p class="work__desc">${movie.logline}</p>
       <div class="work__links">
-        <a href="./movie.html?id=${movie.id}">Открыть →</a>
+        <a href="movie.html?id=${movie.id}">Открыть →</a>
         <button type="button" class="like ${liked ? 'is-on' : ''}" data-id="${movie.id}" aria-pressed="${liked}" aria-label="В избранное">
           ${liked ? '♥ В избранном' : '♡ Хочу посмотреть'}
         </button>
@@ -172,7 +172,7 @@ function spin() {
         </div>
       `;
       goMovie.hidden = false;
-      goMovie.href = `./movie.html?id=${pick.id}`;
+      goMovie.href = `movie.html?id=${pick.id}`;
     }
   };
   tick();

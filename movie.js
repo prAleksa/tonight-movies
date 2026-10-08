@@ -8,7 +8,7 @@ try {
   const movies = await loadMovies();
   const movie = movies.find((m) => m.id === id);
   if (!movie) {
-    root.innerHTML = `<p class="empty">Фильм не найден. <a href="./index.html">В каталог</a></p>`;
+    root.innerHTML = `<p class="empty">Фильм не найден. <a href="index.html">В каталог</a></p>`;
   } else {
     document.title = `${movie.title} — Сегодня вечером`;
     const liked = isFavorite(movie.id);
