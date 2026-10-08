@@ -11,20 +11,25 @@
       rel="stylesheet"
     />
     <base href="/tonight-movies/" />
-    <link rel="stylesheet" href="styles.css?v=12" />
+    <link rel="stylesheet" href="styles.css?v=13" />
   </head>
   <body>
     <div class="page">
       <div class="shell">
         <header class="topbar">
-          <a class="brand" href="index.html">Сегодня вечером</a>
-          <a class="topnav-link" href="index.html">← Каталог</a>
+          <a class="brand" href="index.html">
+            <span class="brand__mark" aria-hidden="true"></span>
+            Сегодня вечером
+          </a>
+          <nav class="topnav">
+            <a class="navlink" href="index.html">← Каталог</a>
+          </nav>
         </header>
         <main id="movieRoot">
           <p class="count">Загрузка…</p>
         </main>
       </div>
     </div>
-    <script type="module" src="movie.js?v=12"></script>
+    <script type="module" src="movie.js?v=13"></script>
   </body>
 </html>

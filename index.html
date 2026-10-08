@@ -11,18 +11,21 @@
       rel="stylesheet"
     />
     <base href="/tonight-movies/" />
-    <link rel="stylesheet" href="styles.css?v=12" />
+    <link rel="stylesheet" href="styles.css?v=13" />
   </head>
   <body>
     <div class="page">
       <div class="shell">
         <header class="topbar">
-          <a class="brand" href="index.html">Сегодня вечером</a>
+          <a class="brand" href="index.html">
+            <span class="brand__mark" aria-hidden="true"></span>
+            Сегодня вечером
+          </a>
           <nav class="topnav">
-            <button type="button" class="linkish" id="openFavs" aria-pressed="false">
+            <button type="button" class="navlink" id="openFavs" aria-pressed="false">
               Избранное <span id="favCount">0</span>
             </button>
-            <button type="button" class="btn btn--primary" id="openRoulette">Рулетка</button>
+            <button type="button" class="navlink navlink--accent" id="openRoulette">Рулетка</button>
           </nav>
         </header>
 
@@ -82,6 +85,6 @@
       </div>
     </div>
 
-    <script type="module" src="catalog.js?v=12"></script>
+    <script type="module" src="catalog.js?v=13"></script>
   </body>
 </html>
